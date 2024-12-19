@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function closeModal() {
-    scheduleModal.style.display = 'none';
+    scheduleModal.style.display = "none";
   }
 
   function updateCalendarHighlights() {
