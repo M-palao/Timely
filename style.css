@@ -12,7 +12,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  transition: background-color 0.3s ease, color 0.3s ease; /* Added transition */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body.dark-mode {
@@ -122,7 +122,7 @@ button {
   color: #fff;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Added transition */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
   margin-top: 20px;
 }
 
@@ -146,7 +146,7 @@ button:focus {
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #eee; /* Added separator */
+  border-bottom: 1px solid #eee;
 }
 
 .task-section {
@@ -418,4 +418,22 @@ body.dark-mode .close-button {
   input[type="number"] {
     width: 100%;
   }
+}
+
+/* FullCalendar Overrides */
+:root {
+  --fc-border-color: #ddd; /* Light gray borders */
+  --fc-event-bg-color: #007bff; /* Blue events */
+  --fc-event-border-color: #007bff; /* Blue event borders */
+}
+
+.fc .fc-daygrid-day-number {
+  font-size: 1.2em; /* Larger day numbers */
+  padding: 5px; /* More padding around day numbers */
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th,
+.fc-theme-standard .fc-popover {
+  border: 1px solid var(--fc-border-color);
 }
