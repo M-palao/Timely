@@ -403,20 +403,66 @@ body.dark-mode .has-schedule .fc-daygrid-day-number {
   color: #fff; /* White text color for day numbers in dark mode */
 }
 
-/* FullCalendar Dark Mode Overrides */
+/* FullCalendar Overrides */
+:root {
+  --fc-border-color: #ddd;
+  --fc-event-bg-color: #007bff;
+  --fc-event-border-color: #007bff;
+}
+
 body.dark-mode {
-  --fc-button-text-color: #fff;
-  --fc-button-bg-color: #333;
-  --fc-button-border-color: #555;
-  --fc-button-hover-bg-color: #444;
-  --fc-button-hover-border-color: #666;
-  --fc-button-active-bg-color: #555;
-  --fc-button-active-border-color: #777;
+    --fc-button-text-color: #fff;
+    --fc-button-bg-color: #333;
+    --fc-button-border-color: #555;
+    --fc-button-hover-bg-color: #444;
+    --fc-button-hover-border-color: #666;
+    --fc-button-active-bg-color: #555;
+    --fc-button-active-border-color: #777;
+  
+    --fc-event-bg-color: #0056b3;
+    --fc-event-border-color: #0056b3;
+    --fc-event-text-color: #fff;
+  
+    --fc-daygrid-event-dot-width: 8px;
+  
+    --fc-list-event-hover-bg-color: #333;
+  
+    --fc-border-color: #555;
+  }
 
-  --fc-event-bg-color: #0056b3; /* Darker blue for events */
-  --fc-event-border-color: #0056b3; /* Darker blue for event borders */
-  --fc-event-text-color: #fff; /* White text for events */
+.fc .fc-daygrid-day-number {
+  font-size: 1.2em;
+  padding: 5px;
+}
 
-  --fc-daygrid-event-dot-width: 8px; /* Adjust if needed */
+.fc-theme-standard td,
+.fc-theme-standard th,
+.fc-theme-standard .fc-popover {
+  border: 1px solid var(--fc-border-color);
+}
 
-  --fc-list-event-hover-bg-color: #333;
+.fc .fc-col-header-cell-cushion {
+  display: inline-block;
+  padding: 2px 4px;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 600px) {
+  .time-selection-container {
+    grid-template-columns: 1fr;
+  }
+
+  .task-input-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .task-input-group input[type="number"] {
+    width: 100%;
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    width: 100%;
+  }
+}
