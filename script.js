@@ -289,28 +289,39 @@ document.addEventListener('DOMContentLoaded', function () {
     if (schedules[selectedDate]) {
       tasks = [...schedules[selectedDate]];
       totalMinutesUsed = tasks.reduce((total, task) => total + task.duration, 0);
-    } else {
-      tasks = []; // Initialize empty tasks array if no schedule exists
-      totalMinutesUsed = 0;
-    }
 
-    // Check if there's an existing schedule for the selected date
-    if (schedules[selectedDate]) {
-        // If a schedule exists, show the schedule section and hide others
-        inputSection.style.display = 'none';
-        taskSection.style.display = 'block';
-        scheduleSection.style.display = 'block';
-        renderSchedule(); // Make sure the schedule is rendered
+      // Populate wake-up and bed times from the loaded schedule
+      if (tasks.length > 0) {
+        const firstTask = tasks[0];
+        const lastTask = tasks[tasks.length - 1];
+        document.getElementById('wakeUpTime').value = firstTask.startTime.slice(0, -3);
+        document.getElementById('bedTime').value = lastTask.endTime.slice(0, -3);
+
+        // Set wakeUpTime and bedTime in minutes for calculations
+        wakeUpTime = timeToMinutes(document.getElementById('wakeUpTime').value);
+        bedTime = timeToMinutes(document.getElementById('bedTime').value);
+        totalMinutesAvailable = bedTime - wakeUpTime;
+      }
+
+      // Show the schedule section and hide others
+      inputSection.style.display = 'none';
+      taskSection.style.display = 'block';
+      scheduleSection.style.display = 'block';
+      renderSchedule(); // Make sure the schedule is rendered
     } else {
-        // If no schedule exists, show only the input section
-        inputSection.style.display = 'block';
-        taskSection.style.display = 'none';
-        scheduleSection.style.display = 'none';
+      // If no schedule exists, initialize tasks as an empty array
+      tasks = [];
+      totalMinutesUsed = 0;
+
+      // Show only the input section
+      inputSection.style.display = 'block';
+      taskSection.style.display = 'none';
+      scheduleSection.style.display = 'none';
     }
 
     // Initialize or reset form fields
-    document.getElementById('wakeUpTime').value = "07:00";
-    document.getElementById('bedTime').value = "22:00";
+    document.getElementById('wakeUpTime').value = document.getElementById('wakeUpTime').value || "07:00";
+    document.getElementById('bedTime').value = document.getElementById('bedTime').value || "22:00";
     document.getElementById('taskName').value = '';
     document.getElementById('taskDurationHours').value = '';
     document.getElementById('taskDurationMinutes').value = '';
@@ -320,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function closeModal() {
-    scheduleModal.style.display = "none";
+    scheduleModal.style.display = 'none';
   }
 
   function updateCalendarHighlights() {
