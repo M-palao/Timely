@@ -12,12 +12,12 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Added transition */
 }
 
 body.dark-mode {
-  background-color: #202124; /* Dark mode background */
-  color: #e8eaed; /* Light text color for dark mode */
+  background-color: #202124;
+  color: #e8eaed;
 }
 
 .container {
@@ -33,7 +33,7 @@ body.dark-mode {
 }
 
 body.dark-mode .container {
-  background-color: #2b2c2f; /* Darker container background */
+  background-color: #2b2c2f;
   box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
 }
 
@@ -122,7 +122,7 @@ button {
   color: #fff;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Added transition */
   margin-top: 20px;
 }
 
@@ -146,9 +146,10 @@ button:focus {
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #eee; /* Added separator */
 }
 
-.task-section{
+.task-section {
   margin-top: -20px;
 }
 
@@ -217,7 +218,7 @@ body.dark-mode .duration-label {
 }
 
 /* Schedule Section Styles */
-.schedule-section{
+.schedule-section {
   display: none;
 }
 
@@ -357,8 +358,8 @@ body.dark-mode footer a {
   width: 80%;
   max-width: 800px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Added shadow */
 }
 
 body.dark-mode .modal-content {
@@ -369,7 +370,7 @@ body.dark-mode .modal-content {
 .close-button {
   color: #aaa;
   float: right;
-  font-size: 28px;
+  font-size: 30px; /* Increased size */
   font-weight: bold;
   position: absolute;
   top: 10px;
@@ -385,6 +386,17 @@ body.dark-mode .modal-content {
 
 body.dark-mode .close-button {
   color: #9aa0a6;
+}
+
+/* Calendar Highlight Styles */
+.has-schedule {
+  background-color: #e0f0e0; /* Light green for days with schedules */
+  transition: background-color 0.3s ease; /* Added transition */
+}
+
+.has-schedule:hover {
+  background-color: #c0e0c0; /* Slightly darker green on hover */
+  cursor: pointer; /* Change cursor to indicate clickability */
 }
 
 /* Media Queries for Responsiveness */
