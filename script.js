@@ -188,7 +188,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function editTask(index) {
-    const task = tasks[index];
+    const currentTasks = schedules[selectedDate];
+    const task = currentTasks[index];
 
     // Calculate the hours and minutes from the task duration
     const hours = Math.floor(task.duration / 60);
@@ -201,23 +202,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Remove the task from the array and update the total minutes used
     totalMinutesUsed -= task.duration;
-    tasks.splice(index, 1);
+    currentTasks.splice(index, 1);
 
-    // Update the schedule for the selected date (optional, if you want to immediately reflect changes)
-    schedules[selectedDate] = tasks;
+    // Update the schedule for the selected date
+    schedules[selectedDate] = currentTasks;
 
     // Re-render the schedule to reflect the changes
     renderSchedule();
   }
 
   function deleteTask(index) {
-    const task = tasks[index];
+    const currentTasks = schedules[selectedDate];
+    const task = currentTasks[index];
     totalMinutesUsed -= task.duration;
 
-    tasks.splice(index, 1);
+    currentTasks.splice(index, 1);
 
     // Update the schedule for the selected date
-    schedules[selectedDate] = tasks;
+    schedules[selectedDate] = currentTasks;
 
     renderSchedule();
   }
