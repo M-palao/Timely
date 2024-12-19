@@ -138,10 +138,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const endTime = minutesToTime(wakeUpTime + totalMinutesUsed + taskDuration);
 
     const newTask = { taskName, startTime, endTime, duration: taskDuration };
+
+    // Push the new task to the tasks array
     tasks.push(newTask);
+
+    // Update total minutes used
     totalMinutesUsed += taskDuration;
 
-    // Update the schedule for the selected date
+    // Update the schedule for the selected date in the schedules object
     schedules[selectedDate] = tasks;
 
     renderSchedule();
