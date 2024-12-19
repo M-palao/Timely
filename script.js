@@ -27,32 +27,40 @@ document.addEventListener('DOMContentLoaded', function () {
         const firstTask = schedules[selectedDate][0];
         const lastTask = schedules[selectedDate][schedules[selectedDate].length - 1];
 
-        const wakeUp = firstTask ? firstTask.startTime.slice(0,-3) : "07:00"; // Extract HH:MM from "HH:MM AM/PM"
-        const bedTime = lastTask ? lastTask.endTime.slice(0,-3) : "22:00"; // Extract HH:MM from "HH:MM AM/PM"
+        const wakeUp = firstTask ? firstTask.startTime.slice(0, -3) : "07:00"; // Extract HH:MM
+        const bedTime = lastTask ? lastTask.endTime.slice(0, -3) : "22:00"; // Extract HH:MM
 
         document.getElementById('wakeUpTime').value = wakeUp;
         document.getElementById('bedTime').value = bedTime;
-      } else {
-        // If no schedule, use default times
-        document.getElementById('wakeUpTime').value = "07:00";
-        document.getElementById('bedTime').value = "22:00";
-      }
 
-      openModal(); // Open the modal
-
-      // If a schedule exists, immediately render the schedule section
-      if (schedules[selectedDate]) {
+        // Render the schedule immediately upon clicking the date
         setDay(selectedDate); // This will set up tasks and times based on the schedule
         renderSchedule();
         inputSection.style.display = "none";
         taskSection.style.display = "block";
         scheduleSection.style.display = "block";
       } else {
-        startOver(); // Start fresh if no schedule exists
+        // If no schedule, use default times
+        document.getElementById('wakeUpTime').value = "07:00";
+        document.getElementById('bedTime').value = "22:00";
+
+        // Start fresh if no schedule exists
+        startOver();
         inputSection.style.display = "block";
         taskSection.style.display = "none";
         scheduleSection.style.display = "none";
       }
+
+      openModal(); // Open the modal
+    },
+    // Add this to highlight days with schedules
+    dayCellDidMount: function(arg) {
+        const date = arg.date;
+        const dateString = date.toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD' format
+
+        if (schedules[dateString]) {
+            arg.el.classList.add('has-schedule'); // Add a class to the cell element
+        }
     },
   });
   calendar.render();
@@ -106,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
     errorMessage.textContent = '';
 
     renderSchedule();
+    updateCalendarHighlights();
   }
 
   function addTask() {
@@ -268,24 +277,42 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function openModal() {
     scheduleModal.style.display = "block";
-    // inputSection.style.display = 'block';
-    // taskSection.style.display = 'none';
-    // scheduleSection.style.display = 'none';
+
+    // Check if there's an existing schedule for the selected date
+    if (schedules[selectedDate]) {
+        // If a schedule exists, show the schedule section and hide others
+        inputSection.style.display = 'none';
+        taskSection.style.display = 'block';
+        scheduleSection.style.display = 'block';
+        renderSchedule(); // Make sure the schedule is rendered
+    } else {
+        // If no schedule exists, show only the input section
+        inputSection.style.display = 'block';
+        taskSection.style.display = 'none';
+        scheduleSection.style.display = 'none';
+    }
+
     // Initialize or reset form fields
-    // document.getElementById('wakeUpTime').value = "07:00";
-    // document.getElementById('bedTime').value = "22:00";
+    document.getElementById('wakeUpTime').value = "07:00";
+    document.getElementById('bedTime').value = "22:00";
     document.getElementById('taskName').value = '';
     document.getElementById('taskDurationHours').value = '';
     document.getElementById('taskDurationMinutes').value = '';
+
     // Reset tasks and time calculations
-    // tasks = [];
-    // totalMinutesAvailable = 0;
-    // totalMinutesUsed = 0;
+    tasks = [];
+    totalMinutesAvailable = 0;
+    totalMinutesUsed = 0;
+
     // Render or clear the schedule
-    // renderSchedule();
+    renderSchedule();
   }
 
   function closeModal() {
     scheduleModal.style.display = 'none';
+  }
+
+  function updateCalendarHighlights() {
+    calendar.render(); // Re-render the calendar to apply new highlights
   }
 });
