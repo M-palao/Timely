@@ -242,6 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function saveSchedule() {
     localStorage.setItem('schedules', JSON.stringify(schedules));
     alert('Schedule saved successfully!');
+    updateCalendarHighlights();
   }
 
   function toggleDarkMode() {
