@@ -6,7 +6,8 @@
   <title>Timely</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-  <link rel="stylesheet" href="style.css"> <script src='fullcalendar/dist/index.global.js'></script>
+  <link href='fullcalendar/dist/main.css' rel='stylesheet' />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
@@ -37,7 +38,7 @@
                 <button id="setDayBtn">Set Day</button>
                 <div id="errorMessage" class="error-message" aria-live="assertive"></div>
               </section>
-
+        
               <section class="task-section">
                 <h2>Add Tasks</h2>
                 <div class="task-input-container">
@@ -55,7 +56,7 @@
                 </div>
                 <button id="addTaskBtn">Add Task</button>
               </section>
-
+        
               <section class="schedule-section">
                 <h2>Your Schedule</h2>
                 <table id="scheduleTable">
@@ -86,6 +87,7 @@
     <p>&copy; 2023-2024 Timely</p>
   </footer>
 
+  <script src='fullcalendar/dist/index.global.js'></script>
   <script src="script.js"></script>
 </body>
 </html>
