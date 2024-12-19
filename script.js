@@ -285,6 +285,15 @@ document.addEventListener('DOMContentLoaded', function () {
   function openModal() {
     scheduleModal.style.display = "block";
 
+    // If a schedule exists for the selected date, load the tasks
+    if (schedules[selectedDate]) {
+      tasks = [...schedules[selectedDate]];
+      totalMinutesUsed = tasks.reduce((total, task) => total + task.duration, 0);
+    } else {
+      tasks = []; // Initialize empty tasks array if no schedule exists
+      totalMinutesUsed = 0;
+    }
+
     // Check if there's an existing schedule for the selected date
     if (schedules[selectedDate]) {
         // If a schedule exists, show the schedule section and hide others
@@ -305,11 +314,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('taskName').value = '';
     document.getElementById('taskDurationHours').value = '';
     document.getElementById('taskDurationMinutes').value = '';
-
-    // Reset tasks and time calculations
-    tasks = [];
-    totalMinutesAvailable = 0;
-    totalMinutesUsed = 0;
 
     // Render or clear the schedule
     renderSchedule();
