@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timely</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link href='fullcalendar/dist/main.css' rel='stylesheet' />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Timely</h1>
+      <h2>Plan your day effectively</h2>
+    </header>
+
+    <main>
+      <div id="calendar"></div>
+      <div id="scheduleModal" class="modal">
+          <div class="modal-content">
+              <span class="close-button">&times;</span>
+              <section class="input-section">
+                <h2>Set Your Day for <span id="selectedDate"></span></h2>
+                <div class="time-selection-container">
+                  <div class="time-input-group">
+                    <label for="wakeUpTime">Wake-up Time:</label>
+                    <input type="time" id="wakeUpTime" value="07:00" aria-label="Enter your wake-up time">
+                    <i class="fas fa-sun time-icon" aria-hidden="true"></i>
+                  </div>
+                  <div class="time-input-group">
+                    <label for="bedTime">Bed Time:</label>
+                    <input type="time" id="bedTime" value="22:00" aria-label="Enter your bed time">
+                    <i class="fas fa-moon time-icon" aria-hidden="true"></i>
+                  </div>
+                </div>
+                <button id="setDayBtn">Set Day</button>
+                <div id="errorMessage" class="error-message" aria-live="assertive"></div>
+              </section>
+
+              <section class="task-section">
+                <h2>Add Tasks</h2>
+                <div class="task-input-container">
+                  <div class="task-input-group">
+                    <label for="taskName">Task Name:</label>
+                    <input type="text" id="taskName" placeholder="e.g., Work, Study, Exercise">
+                  </div>
+                  <div class="task-input-group">
+                    <label for="taskDurationHours">Duration:</label>
+                    <input type="number" id="taskDurationHours" placeholder="Hrs" min="0">
+                    <span class="duration-label">hrs</span>
+                    <input type="number" id="taskDurationMinutes" placeholder="Mins" min="0" max="59">
+                    <span class="duration-label">mins</span>
+                  </div>
+                </div>
+                <button id="addTaskBtn">Add Task</button>
+              </section>
+
+              <section class="schedule-section">
+                <h2>Your Schedule</h2>
+                <table id="scheduleTable">
+                  <thead>
+                    <tr>
+                      <th scope="col">Time</th>
+                      <th scope="col">Task</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+                <button id="saveScheduleBtn" disabled>Save Schedule</button>
+                <button id="startOverBtn">Start Over</button>
+              </section>
+          </div>
+      </div>
+    </main>
+
+    <button id="darkModeBtn">Toggle Dark Mode</button>
+  </div>
+
+  <footer>
+    <p>For inquiries, contact us at: <a href="mailto:mhppalao@addu.edu.ph">mhppalao@addu.edu.ph</a> or call <a href="tel:+639550724118">+63 955 072 4118</a>.</p>
+    <p>Special thanks to AdDU Senior High School for allowing us to conduct this study.</p>
+    <p>A project by Group 1 of Garate 12</p>
+    <p>&copy; 2023-2024 Timely</p>
+  </footer>
+
+  <script src='fullcalendar/dist/index.global.js'></script>
+  <script src="script.js"></script>
+</body>
+</html>

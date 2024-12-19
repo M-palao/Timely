@@ -1,0 +1,291 @@
+document.addEventListener('DOMContentLoaded', function () {
+  const setDayBtn = document.getElementById('setDayBtn');
+  const addTaskBtn = document.getElementById('addTaskBtn');
+  const saveScheduleBtn = document.getElementById('saveScheduleBtn');
+  const darkModeBtn = document.getElementById('darkModeBtn');
+  const startOverBtn = document.getElementById('startOverBtn');
+  const scheduleModal = document.getElementById('scheduleModal');
+  const selectedDateDisplay = document.getElementById('selectedDate');
+  const closeButton = document.querySelector('.close-button');
+  const taskSection = document.querySelector('.task-section');
+  const scheduleSection = document.querySelector('.schedule-section');
+  const inputSection = document.querySelector('.input-section')
+
+  let schedules = JSON.parse(localStorage.getItem('schedules')) || {};
+  let selectedDate = null;
+
+  const calendarEl = document.getElementById('calendar');
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    dateClick: function (info) {
+      selectedDate = info.dateStr;
+      selectedDateDisplay.textContent = selectedDate;
+
+      // Check if a schedule exists for the date
+      if (schedules[selectedDate]) {
+        // If it exists, populate the time fields based on the schedule
+        const firstTask = schedules[selectedDate][0];
+        const lastTask = schedules[selectedDate][schedules[selectedDate].length - 1];
+
+        const wakeUp = firstTask ? firstTask.startTime.slice(0,-3) : "07:00"; // Extract HH:MM from "HH:MM AM/PM"
+        const bedTime = lastTask ? lastTask.endTime.slice(0,-3) : "22:00"; // Extract HH:MM from "HH:MM AM/PM"
+
+        document.getElementById('wakeUpTime').value = wakeUp;
+        document.getElementById('bedTime').value = bedTime;
+      } else {
+        // If no schedule, use default times
+        document.getElementById('wakeUpTime').value = "07:00";
+        document.getElementById('bedTime').value = "22:00";
+      }
+
+      openModal(); // Open the modal
+
+      // If a schedule exists, immediately render the schedule section
+      if (schedules[selectedDate]) {
+        setDay(selectedDate); // This will set up tasks and times based on the schedule
+        renderSchedule();
+        inputSection.style.display = "none";
+        taskSection.style.display = "block";
+        scheduleSection.style.display = "block";
+      } else {
+        startOver(); // Start fresh if no schedule exists
+        inputSection.style.display = "block";
+        taskSection.style.display = "none";
+        scheduleSection.style.display = "none";
+      }
+    },
+  });
+  calendar.render();
+
+  setDayBtn.addEventListener('click', () => setDay(selectedDate));
+  addTaskBtn.addEventListener('click', addTask);
+  saveScheduleBtn.addEventListener('click', saveSchedule);
+  darkModeBtn.addEventListener('click', toggleDarkMode);
+  startOverBtn.addEventListener('click', startOver);
+  closeButton.addEventListener('click', closeModal);
+
+  let wakeUpTime = null;
+  let bedTime = null;
+  let tasks = [];
+  let totalMinutesAvailable = 0;
+  let totalMinutesUsed = 0;
+
+  function setDay(date) {
+    const wakeUp = document.getElementById('wakeUpTime').value;
+    const bed = document.getElementById('bedTime').value;
+    const errorMessage = document.getElementById('errorMessage');
+
+    if (!wakeUp || !bed) {
+      showError("Please set both wake-up and bed times.");
+      return;
+    }
+
+    wakeUpTime = timeToMinutes(wakeUp);
+    bedTime = timeToMinutes(bed);
+
+    if (wakeUpTime >= bedTime) {
+      showError("Bedtime must be later than wake-up time.");
+      return;
+    }
+
+    totalMinutesAvailable = bedTime - wakeUpTime;
+
+    // If there's an existing schedule for the date, load it
+    if (schedules[date]) {
+      tasks = [...schedules[date]];
+      totalMinutesUsed = tasks.reduce((total, task) => total + task.duration, 0);
+    } else {
+      tasks = [];
+      totalMinutesUsed = 0;
+    }
+
+    // Show task section and schedule section, hide input section
+    taskSection.style.display = "block";
+    scheduleSection.style.display = "block";
+    inputSection.style.display = "none";
+    errorMessage.textContent = '';
+
+    renderSchedule();
+  }
+
+  function addTask() {
+    const taskName = document.getElementById('taskName').value;
+    const taskDurationHours = parseInt(document.getElementById('taskDurationHours').value) || 0;
+    const taskDurationMinutes = parseInt(document.getElementById('taskDurationMinutes').value) || 0;
+    const taskDuration = (taskDurationHours * 60) + taskDurationMinutes;
+    const errorMessage = document.getElementById('errorMessage');
+
+    if (!taskName || isNaN(taskDuration) || taskDuration <= 0) {
+      showError("Please provide a valid task name and duration.");
+      return;
+    }
+
+    if (totalMinutesUsed + taskDuration > totalMinutesAvailable) {
+      showError(`Not enough time left. You have ${totalMinutesAvailable - totalMinutesUsed} minutes remaining.`);
+      return;
+    }
+
+    const startTime = minutesToTime(wakeUpTime + totalMinutesUsed);
+    const endTime = minutesToTime(wakeUpTime + totalMinutesUsed + taskDuration);
+
+    const newTask = { taskName, startTime, endTime, duration: taskDuration };
+    tasks.push(newTask);
+    totalMinutesUsed += taskDuration;
+
+    // Update the schedule for the selected date
+    schedules[selectedDate] = tasks;
+
+    renderSchedule();
+
+    // Reset the task input fields
+    document.getElementById('taskName').value = '';
+    document.getElementById('taskDurationHours').value = '';
+    document.getElementById('taskDurationMinutes').value = '';
+    errorMessage.textContent = '';
+  }
+
+  function renderSchedule() {
+    const scheduleTableBody = document.querySelector('#scheduleTable tbody');
+    scheduleTableBody.innerHTML = '';
+
+    const currentTasks = schedules[selectedDate] || [];
+
+    currentTasks.forEach((task, index) => {
+      const row = scheduleTableBody.insertRow();
+      const timeCell = row.insertCell();
+      const taskCell = row.insertCell();
+      const actionsCell = row.insertCell();
+
+      timeCell.textContent = `${task.startTime} - ${task.endTime}`;
+      taskCell.textContent = task.taskName;
+
+      const editBtn = document.createElement('button');
+      editBtn.classList.add('editBtn');
+      editBtn.dataset.index = index;
+      editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+      editBtn.addEventListener('click', () => editTask(index));
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.classList.add('deleteBtn');
+      deleteBtn.dataset.index = index;
+      deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete';
+      deleteBtn.addEventListener('click', () => deleteTask(index));
+
+      actionsCell.appendChild(editBtn);
+      actionsCell.appendChild(deleteBtn);
+    });
+
+    document.getElementById('saveScheduleBtn').disabled = currentTasks.length === 0;
+  }
+
+  function editTask(index) {
+    const task = tasks[index];
+
+    // Calculate the hours and minutes from the task duration
+    const hours = Math.floor(task.duration / 60);
+    const minutes = task.duration % 60;
+
+    // Populate the task input fields with the task details
+    document.getElementById('taskName').value = task.taskName;
+    document.getElementById('taskDurationHours').value = hours;
+    document.getElementById('taskDurationMinutes').value = minutes;
+
+    // Remove the task from the array and update the total minutes used
+    totalMinutesUsed -= task.duration;
+    tasks.splice(index, 1);
+
+    // Update the schedule for the selected date (optional, if you want to immediately reflect changes)
+    schedules[selectedDate] = tasks;
+
+    // Re-render the schedule to reflect the changes
+    renderSchedule();
+  }
+
+  function deleteTask(index) {
+    const task = tasks[index];
+    totalMinutesUsed -= task.duration;
+
+    tasks.splice(index, 1);
+
+    // Update the schedule for the selected date
+    schedules[selectedDate] = tasks;
+
+    renderSchedule();
+  }
+
+  function timeToMinutes(time) {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+  }
+
+  function minutesToTime(minutes) {
+    let hours = Math.floor(minutes / 60);
+    let mins = minutes % 60;
+    const period = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12; // Convert to 12-hour format
+    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')} ${period}`;
+  }
+
+  function showError(message) {
+    document.getElementById('errorMessage').textContent = message;
+  }
+
+  function saveSchedule() {
+    localStorage.setItem('schedules', JSON.stringify(schedules));
+    alert('Schedule saved successfully!');
+  }
+
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+  }
+
+  function startOver() {
+    // Reset input fields
+    document.getElementById('wakeUpTime').value = "07:00";
+    document.getElementById('bedTime').value = "22:00";
+    document.getElementById('taskName').value = '';
+    document.getElementById('taskDurationHours').value = '';
+    document.getElementById('taskDurationMinutes').value = '';
+    // Reset tasks and time calculations
+    tasks = [];
+    totalMinutesAvailable = 0;
+    totalMinutesUsed = 0;
+
+    // Clear the schedule for the selected date
+    if (schedules[selectedDate]) {
+      schedules[selectedDate] = [];
+    }
+
+    // Show only the input section, hide others
+    inputSection.style.display = "block";
+    taskSection.style.display = "none";
+    scheduleSection.style.display = "none";
+    document.getElementById('errorMessage').textContent = '';
+
+    // Clear the schedule table
+    renderSchedule();
+  }
+
+  function openModal() {
+    scheduleModal.style.display = "block";
+    // inputSection.style.display = 'block';
+    // taskSection.style.display = 'none';
+    // scheduleSection.style.display = 'none';
+    // Initialize or reset form fields
+    // document.getElementById('wakeUpTime').value = "07:00";
+    // document.getElementById('bedTime').value = "22:00";
+    document.getElementById('taskName').value = '';
+    document.getElementById('taskDurationHours').value = '';
+    document.getElementById('taskDurationMinutes').value = '';
+    // Reset tasks and time calculations
+    // tasks = [];
+    // totalMinutesAvailable = 0;
+    // totalMinutesUsed = 0;
+    // Render or clear the schedule
+    // renderSchedule();
+  }
+
+  function closeModal() {
+    scheduleModal.style.display = 'none';
+  }
+});
